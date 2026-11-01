@@ -1,5 +1,6 @@
 "use client";
 
+import { useState } from "react";
 import Image from "next/image";
 import {
   BookOpen,
@@ -25,11 +26,14 @@ export type Book = {
 };
 
 export default function BookDetailsCard({ book }: { book: Book }) {
-  
+  const [imageFailed, setImageFailed] = useState(false);
+
+  const hasValidImage = Boolean(book.image && !imageFailed);
+
   return (
     <div className="mx-auto max-w-4xl">
       <Link
-        href="/books"
+        href="/all-books"
         className="mb-6 inline-flex items-center gap-2 text-sm font-medium text-[#555555] transition hover:text-[#A67C45]"
       >
         <ArrowLeft size={17} />
@@ -39,19 +43,24 @@ export default function BookDetailsCard({ book }: { book: Book }) {
       <div className="overflow-hidden rounded-3xl border border-[#D6D1C8] bg-white shadow-sm">
         <div className="grid md:grid-cols-2">
           {/* Book Image */}
-          <div className="relative min-h-[350px] bg-[#F5F2EC]">
-            {book.image ? (
+          <div className="relative min-h-[300px] bg-[#F5F2EC] md:min-h-[420px]">
+            {hasValidImage ? (
               <Image
                 src={book.image}
-                alt={book.title}
+                alt={`Cover of ${book.title}`}
                 fill
-                unoptimized
-                className="object-contain p-6"
                 sizes="(max-width: 768px) 100vw, 50vw"
+                className="object-contain p-6"
+                onError={() => setImageFailed(true)}
               />
             ) : (
-              <div className="flex h-full w-full items-center justify-center">
-                <p className="text-sm text-[#555555]">No Image Available</p>
+              <div className="flex h-full w-full flex-col items-center justify-center gap-3 p-6 text-center">
+                <div className="flex h-16 w-16 items-center justify-center rounded-2xl border border-[#D6D1C8] bg-white">
+                  <BookOpen size={28} className="text-[#D6D1C8]" />
+                </div>
+                <p className="text-sm font-medium text-[#777777]">
+                  No cover image available
+                </p>
               </div>
             )}
           </div>

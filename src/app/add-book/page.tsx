@@ -2,7 +2,11 @@
 
 import { useState } from "react";
 import Link from "next/link";
-import { BookOpen, ArrowLeft, Plus, Image as ImageIcon } from "lucide-react";
+import { BookOpen, ArrowLeft, Plus, Loader2 } from "lucide-react";
+import { useRouter } from "next/navigation";
+
+import { authClient } from "@/lib/auth-client";
+import { toast } from "@/components/ui/toast";
 
 import {
   Card,
@@ -23,6 +27,8 @@ const initialForm = {
 };
 
 export default function AddBookPage() {
+    const router = useRouter();
+    const { data: session } = authClient.useSession();
   const [imageName, setImageName] = useState("");
   const [form, setForm] = useState(initialForm);
   const [loading, setLoading] = useState(false);
@@ -62,18 +68,27 @@ export default function AddBookPage() {
         throw new Error(data.message || "Failed to add book");
       }
 
-      console.log("Book added:", data);
+     console.log("Book added:", data);
 
-      setMessage("Book added successfully!");
+     setMessage("Book added successfully!");
+     toast.success("Book added successfully!");
 
-      // Reset form
-      setForm(initialForm);
-      setImageName("");
+     setForm(initialForm);
+     setImageName("");
+
+     setTimeout(() => {
+       router.push("/all-books");
+     }, 500);
     } catch (error) {
       console.error("Add Book Error:", error);
 
       setMessage(
         error instanceof Error ? error.message : "Something went wrong",
+      );
+      toast.error(
+        error instanceof Error
+          ? error.message
+          : "Something went wrong. Please try again.",
       );
     } finally {
       setLoading(false);
@@ -179,8 +194,6 @@ export default function AddBookPage() {
                 </label>
 
                 <div className="rounded-2xl border-2 border-dashed border-[#D6D1C8] bg-[#F5F2EC]/50 p-5">
-                
-
                   <input
                     type="url"
                     required
@@ -190,7 +203,25 @@ export default function AddBookPage() {
                     className="w-full rounded-xl border border-[#D6D1C8] bg-white px-4 py-3 text-sm text-[#191917] outline-none transition placeholder:text-[#999999] focus:border-[#A67C45] focus:ring-2 focus:ring-[#A67C45]/10"
                   />
 
-                  
+                  {imageName.startsWith("http") && (
+                    <div className="relative mt-4 aspect-[4/3] w-full overflow-hidden rounded-xl border border-[#D6D1C8] bg-white">
+                      {/* eslint-disable-next-line @next/next/no-img-element */}
+                      <img
+                        src={imageName}
+                        alt="Book cover preview"
+                        onError={(event) =>
+                          event.currentTarget.classList.add("hidden")
+                        }
+                        onLoad={(event) =>
+                          event.currentTarget.classList.remove("hidden")
+                        }
+                        className="h-full w-full object-contain p-3"
+                      />
+                      <span className="pointer-events-none absolute bottom-2 left-2 rounded-full bg-[#191917]/80 px-3 py-1 text-[11px] font-medium text-white">
+                        Preview
+                      </span>
+                    </div>
+                  )}
                 </div>
               </div>
 
@@ -224,7 +255,7 @@ export default function AddBookPage() {
 
                     <input
                       type="text"
-                      value="Logged-in User"
+                      value={session?.user?.name || "Not signed in"}
                       readOnly
                       className="w-full rounded-xl border border-[#D6D1C8] bg-white px-4 py-3 text-sm text-[#777777] outline-none"
                     />
@@ -237,7 +268,7 @@ export default function AddBookPage() {
 
                     <input
                       type="email"
-                      value="user@example.com"
+                      value={session?.user?.email || "Sign in to add books"}
                       readOnly
                       className="w-full rounded-xl border border-[#D6D1C8] bg-white px-4 py-3 text-sm text-[#777777] outline-none"
                     />
@@ -245,7 +276,7 @@ export default function AddBookPage() {
                 </div>
 
                 <p className="mt-3 text-xs text-[#888888]">
-                  Your account information will be displayed here.
+                  Your account information will be attached to this book.
                 </p>
               </div>
 
@@ -268,9 +299,17 @@ export default function AddBookPage() {
                 disabled={loading}
                 className="flex w-full items-center justify-center gap-2 rounded-xl bg-[#191917] px-6 py-4 text-sm font-bold text-white transition hover:bg-[#A67C45] disabled:cursor-not-allowed disabled:opacity-60"
               >
-                <Plus size={19} />
-
-                {loading ? "Adding..." : "Add Book"}
+                {loading ? (
+                  <>
+                    <Loader2 size={19} className="animate-spin" />
+                    Adding...
+                  </>
+                ) : (
+                  <>
+                    <Plus size={19} />
+                    Add Book
+                  </>
+                )}
               </button>
             </form>
           </CardContent>

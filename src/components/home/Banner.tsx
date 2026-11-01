@@ -3,7 +3,7 @@
 import Link from "next/link";
 
 import { Swiper, SwiperSlide } from "swiper/react";
-import { Autoplay, Pagination, Navigation, EffectFade } from "swiper/modules";
+import { Pagination, Navigation, EffectFade } from "swiper/modules";
 
 import { BookOpen, Sparkles, LibraryBig, ArrowRight } from "lucide-react";
 
@@ -81,7 +81,7 @@ const Banner = () => {
                     </p>
 
                     <Link
-                      href="/books"
+                      href="/all-books"
                       className="mt-8 inline-flex items-center gap-3 rounded-full bg-[#191917] px-7 py-3.5 text-sm font-semibold text-white transition-all hover:bg-[#a67c45]"
                     >
                       Browse Books

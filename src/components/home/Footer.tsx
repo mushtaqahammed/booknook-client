@@ -41,8 +41,10 @@ const Footer = () => {
                 <BookOpen className="h-6 w-6 text-[#D6B47C]" />
               </span>
 
-              <span className="text-2xl font-bold tracking-tight text-[#191917]">
-                BookNook<span className="text-[#A67C45]">.</span>
+              <span className="text-2xl font-bold tracking-tight">
+                <span className="text-[#191917]">Book</span>
+                <span className="text-[#A67C45]">Nook</span>
+                <span className="text-[#191917]">.</span>
               </span>
             </Link>
 
@@ -53,7 +55,7 @@ const Footer = () => {
           </div>
 
           <Link
-            href="/books"
+            href="/all-books"
             className="flex w-fit items-center gap-2 rounded-full bg-[#191917] px-5 py-3 text-sm font-medium text-white transition-all hover:bg-[#A67C45]"
           >
             Explore Books
