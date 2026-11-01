@@ -40,7 +40,7 @@ const Navbar = () => {
   const { data: session } = authClient.useSession();
   const user = session?.user;
 
-  console.log("User image:", user?.image);
+
 
   const [menuOpen, setMenuOpen] = useState(false);
   const [popoverOpen, setPopoverOpen] = useState(false);

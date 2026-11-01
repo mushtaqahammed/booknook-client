@@ -5,14 +5,9 @@ import Image from "next/image";
 import Link from "next/link";
 import { BookOpen } from "lucide-react";
 
-export type BookCardData = {
-  _id: string;
-  title: string;
-  author: string;
-  category: string;
-  description: string;
-  image?: string;
-};
+import type { BookCardData } from "@/types/book";
+
+export type { BookCardData };
 
 const BookCard = ({ book }: { book: BookCardData }) => {
   const [imageFailed, setImageFailed] = useState(false);

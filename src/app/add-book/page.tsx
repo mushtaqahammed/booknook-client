@@ -48,11 +48,18 @@ export default function AddBookPage() {
     setMessage("");
 
     try {
-      // Image link + form data
-      const bookData = {
-        ...form,
-        image: imageName,
-      };
+      // Image link + form data, tagged with the signed-in user so the book
+     // shows up under My Books and in the "Added By" section.
+     const bookData = {
+       ...form,
+       image: imageName,
+       userId: session?.user?.id,
+       addedBy: {
+         id: session?.user?.id,
+         name: session?.user?.name,
+         email: session?.user?.email,
+       },
+     };
 
       const res = await fetch("http://localhost:8000/add-book", {
         method: "POST",
