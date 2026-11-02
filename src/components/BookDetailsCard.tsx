@@ -9,6 +9,8 @@ import {
   Mail,
   ArrowLeft,
 } from "lucide-react";
+
+import { authClient } from "@/lib/auth-client";
 import Link from "next/link";
 
 export type Book = {
@@ -25,10 +27,86 @@ export type Book = {
   };
 };
 
+
+
+
+
+import { toast } from "react-toastify";
+
+
+
+ 
+
 export default function BookDetailsCard({ book }: { book: Book }) {
   const [imageFailed, setImageFailed] = useState(false);
+  const [isBorrowed, setIsBorrowed] = useState(false);
+  const [loading, setLoading] = useState(false);
 
   const hasValidImage = Boolean(book.image && !imageFailed);
+
+
+const { data: session } = authClient.useSession();
+
+
+
+
+
+
+
+const handleBorrow = async () => {
+  try {
+    if (!session?.user) {
+      toast.error("Please login first!");
+      return;
+    }
+
+    setLoading(true);
+
+    const bookData = {
+      bookId: book._id,
+      bookTitle: book.title,
+      bookImage: book.image || "",
+      userName: session.user.name,
+      userEmail: session.user.email,
+      borrowDate: new Date().toISOString().split("T")[0],
+      returnDate: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000)
+        .toISOString()
+        .split("T")[0],
+    };
+
+    const res = await fetch("http://localhost:8000/borrows", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(bookData),
+    });
+
+    const data = await res.json();
+
+    if (res.status === 409) {
+      setIsBorrowed(true);
+      toast.warning("You have already borrowed this book!");
+      return;
+    }
+
+    if (!res.ok) {
+      toast.error(data.message || "Borrow failed!");
+      return;
+    }
+
+    setIsBorrowed(true);
+    toast.success("Book borrowed successfully!");
+  } catch (error) {
+    console.error(error);
+    toast.error("Something went wrong!");
+  } finally {
+    setLoading(false);
+  }
+};
+
+
+
 
   return (
     <div className="mx-auto max-w-4xl">
@@ -127,13 +205,19 @@ export default function BookDetailsCard({ book }: { book: Book }) {
               </div>
             </div>
 
-            {/* Borrow Button */}
             <button
               type="button"
-              className="mt-7 flex w-full items-center justify-center gap-2 rounded-xl bg-[#191917] px-5 py-4 text-sm font-bold text-white transition hover:bg-[#A67C45]"
+              onClick={handleBorrow}
+              disabled={loading || isBorrowed}
+              className="mt-7 flex w-full items-center justify-center gap-2 rounded-xl bg-[#191917] px-5 py-4 text-sm font-bold text-white transition hover:bg-[#A67C45] disabled:cursor-not-allowed disabled:bg-gray-400"
             >
               <BookOpen size={19} />
-              Borrow This Book
+
+              {loading
+                ? "Processing..."
+                : isBorrowed
+                  ? "Already Borrowed"
+                  : "Borrow This Book"}
             </button>
           </div>
         </div>

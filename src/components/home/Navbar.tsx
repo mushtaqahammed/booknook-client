@@ -1,9 +1,10 @@
 "use client";
 
 import { useState } from "react";
-import Image from "next/image";
+
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
+import { BookOpen } from "lucide-react";
 import {
   BookMarked,
   ChevronDown,
@@ -13,7 +14,7 @@ import {
   X,
 } from "lucide-react";
 
-import Logo from "@/assets/logo2.png";
+
 import { authClient } from "@/lib/auth-client";
 import { toast } from "@/components/ui/toast";
 import UserAvatar from "@/components/UserAvatar";
@@ -82,18 +83,19 @@ const Navbar = () => {
     }`;
 
   return (
-    <div className="w-full bg-[#F5F2EC] px-4 pt-5">
-      <nav className="mx-auto flex max-w-6xl items-center justify-between rounded-full border border-[#D6D1C8] bg-white py-2 pl-5 pr-2 shadow-sm">
+    <div className="sticky top-0 z-50 w-full bg-[#F5F2EC]/90 px-4 py-3 backdrop-blur-xl transition-all duration-300">
+      <nav className="mx-auto flex max-w-6xl items-center justify-between rounded-full border border-[#D6D1C8]/80 bg-white/95 py-2 pl-5 pr-2 shadow-md shadow-[#191917]/5 transition-all duration-300">
         {/* Brand */}
-        <Link href="/" className="flex shrink-0 items-center gap-2">
-          <Image
-            src={Logo}
-            alt="BookNook Logo"
-            width={124}
-            height={45}
-            priority
-            className="object-contain"
-          />
+        <Link href="/" className="flex w-fit items-center gap-3">
+          <span className="flex h-11 w-11 items-center justify-center rounded-xl bg-[#191917]">
+            <BookOpen className="h-6 w-6 text-[#D6B47C]" />
+          </span>
+
+          <span className="text-2xl font-bold tracking-tight">
+            <span className="text-[#191917]">Book</span>
+            <span className="text-[#A67C45]">Nook</span>
+            <span className="text-[#191917]">.</span>
+          </span>
         </Link>
 
         {/* Desktop Navigation Links */}

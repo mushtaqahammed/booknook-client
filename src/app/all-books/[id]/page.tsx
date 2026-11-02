@@ -24,6 +24,8 @@ const BookDetailPage = async ({
 
   const data = await res.json();
 
+   
+
   return (
     <main className="min-h-screen bg-[#F5F2EC] px-4 py-10 sm:py-14">
       <BookDetailsCard book={data} />
