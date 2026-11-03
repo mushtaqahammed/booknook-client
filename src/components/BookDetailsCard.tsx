@@ -74,7 +74,7 @@ const handleBorrow = async () => {
         .split("T")[0],
     };
 
-    const res = await fetch("http://localhost:8000/borrows", {
+    const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/borrows`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",

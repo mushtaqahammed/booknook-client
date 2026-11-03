@@ -71,14 +71,17 @@ const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     };
 
     // Send request to backend
-    const res = await fetch("http://localhost:8000/add-book", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${token}`,
+    const res = await fetch(
+      `${process.env.NEXT_PUBLIC_API_URL}/add-book`,
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify(bookData),
       },
-      body: JSON.stringify(bookData),
-    });
+    );
 
     const result = await res.json();
 

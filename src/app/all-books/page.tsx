@@ -4,7 +4,7 @@ import { BookOpen, LibraryBig } from "lucide-react";
 import BookCard, { type BookCardData } from "@/components/BookCard";
 
 const AllBooksPage = async () => {
-  const res = await fetch("http://localhost:8000/books", {
+  const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/books`, {
     cache: "no-store",
   });
   const data: BookCardData[] = await res.json();

@@ -28,6 +28,7 @@ const MyBorrrowsBookPage = () => {
   useEffect(() => {
     const fetchBorrows = async () => {
       if (!session?.user?.email) return;
+      
 
       try {
         setLoading(true);
@@ -62,7 +63,7 @@ const MyBorrrowsBookPage = () => {
       setReturningId(id);
 
       const res = await fetch(
-        `http://localhost:8000/borrows/${id}?email=${encodeURIComponent(
+        `${process.env.NEXT_PUBLIC_API_URL}/borrows/${id}?email=${encodeURIComponent(
           session?.user?.email || "",
         )}`,
         {
