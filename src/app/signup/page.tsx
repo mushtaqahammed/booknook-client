@@ -6,7 +6,7 @@ import { useRouter } from "next/navigation";
 import { Eye, EyeOff, ImagePlus, Loader2, UserRoundPen } from "lucide-react";
 
 import AuthLayout from "@/components/auth/AuthLayout";
-import SocialAuthButtons from "@/components/auth/SocialAuthButtons";
+
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { authClient } from "@/lib/auth-client";
 import { toast } from "@/components/ui/toast";
@@ -172,14 +172,7 @@ export default function RegisterPage() {
   return (
     <AuthLayout eyebrow="JOIN THE NOOK" title="Create your account">
       <form onSubmit={handleSubmit} className="space-y-5" noValidate>
-        <SocialAuthButtons disabled={loading} />
-
-        <div className="relative my-1 text-center">
-          <span className="absolute inset-x-0 top-1/2 h-px bg-[#D6D1C8]" />
-          <span className="relative inline-block bg-white px-3 text-xs font-medium tracking-wide text-[#777777]">
-            or continue with email
-          </span>
-        </div>
+     
 
         {/* Name */}
         <div className="space-y-1.5">
