@@ -34,9 +34,12 @@ const MyBorrrowsBookPage = () => {
         setLoading(true);
 
         const res = await fetch(
-          `http://localhost:8000/borrows?email=${encodeURIComponent(
+          `${process.env.NEXT_PUBLIC_API_URL}/borrows?email=${encodeURIComponent(
             session.user.email,
           )}`,
+          {
+            cache: "no-store",
+          },
         );
 
         if (!res.ok) {
@@ -62,14 +65,15 @@ const MyBorrrowsBookPage = () => {
     try {
       setReturningId(id);
 
-      const res = await fetch(
-        `${process.env.NEXT_PUBLIC_API_URL}/borrows/${id}?email=${encodeURIComponent(
-          session?.user?.email || "",
-        )}`,
-        {
-          method: "DELETE",
-        },
-      );
+   const res = await fetch(
+     `${process.env.NEXT_PUBLIC_API_URL}/borrows/${id}?email=${encodeURIComponent(
+       session?.user?.email || "",
+     )}`,
+     {
+       method: "DELETE",
+       cache: "no-store",
+     },
+   );
 
       const data = await res.json();
 
