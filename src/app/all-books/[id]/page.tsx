@@ -9,6 +9,9 @@ const BookDetailPage = async ({
 
   const res = await fetch(`http://localhost:8000/books/${id}`, {
     cache: "no-store",
+    headers: {
+      authorization:"user loged in"
+    }
   });
 
   if (!res.ok) {
