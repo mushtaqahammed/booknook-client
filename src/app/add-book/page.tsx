@@ -27,6 +27,7 @@ const initialForm = {
   author: "",
   category: "",
   description: "",
+  totalCopies: "1",
 };
 
 export default function AddBookPage() {
@@ -61,6 +62,8 @@ const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     // Book information
     const bookData = {
       ...form,
+      // Ensure the API receives a whole number of copies
+      totalCopies: Math.max(1, Number(form.totalCopies) || 1),
       image: imageName,
       userId: session.user.id,
       addedBy: {
@@ -204,6 +207,29 @@ const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
                     </option>
                   ))}
                 </select>
+              </div>
+
+              {/* Total Copies */}
+              <div>
+                <label className="mb-2 block text-sm font-semibold text-[#191917]">
+                  Total Copies <span className="text-[#A67C45]">*</span>
+                </label>
+
+                <input
+                  type="number"
+                  min={1}
+                  step={1}
+                  required
+                  value={form.totalCopies}
+                  onChange={(e) => update("totalCopies", e.target.value)}
+                  placeholder="How many copies do you own?"
+                  className="w-full rounded-xl border border-[#D6D1C8] bg-white px-4 py-3 text-sm text-[#191917] outline-none transition placeholder:text-[#999999] focus:border-[#A67C45] focus:ring-2 focus:ring-[#A67C45]/10"
+                />
+
+                <p className="mt-2 text-xs text-[#888888]">
+                  Each borrow reduces the available copies by 1; each return
+                  increases it again.
+                </p>
               </div>
 
               {/* Book Image Link */}

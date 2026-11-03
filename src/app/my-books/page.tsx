@@ -15,6 +15,7 @@ import {
 
 import { EditBookModal, DeleteBookModal } from "@/components/BookActions";
 import { authClient } from "@/lib/auth-client";
+import { getTokenFromserver } from "@/lib/getTokenFromClient";
 import { toast } from "@/components/ui/toast";
 import type { BookCardData } from "@/types/book";
 
@@ -38,8 +39,8 @@ const MyBooksPage = () => {
       try {
         setLoading(true);
 
-        // Get token from Better Auth session
-        const token = session?.session?.token;
+        // Backend routes need the Better Auth JWT, not the session token
+        const token = await getTokenFromserver();
 
         if (!token) {
           throw new Error("Authentication token not found.");
@@ -65,7 +66,7 @@ const MyBooksPage = () => {
           setBooks(data);
           setFailed(false);
         }
-      } catch (error) {
+      } catch {
         if (!cancelled) {
           setFailed(true);
           toast.error("Could not load your books. Please retry.");
@@ -82,7 +83,7 @@ const MyBooksPage = () => {
     return () => {
       cancelled = true;
     };
-  }, [isPending, user?.id, session?.session?.token, refreshKey]);
+  }, [isPending, user?.id, refreshKey]);
 
   const handleRetry = () => {
     setFailed(false);

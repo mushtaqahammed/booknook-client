@@ -57,6 +57,14 @@ const BookCard = ({ book }: { book: BookCardData }) => {
 
         {(() => {
           const copies = book.availableCopies ?? 1;
+          const total = book.totalCopies;
+
+          const label =
+            copies > 0
+              ? `${copies} ${copies === 1 ? "copy" : "copies"} available${
+                  typeof total === "number" ? ` of ${total}` : ""
+                }`
+              : "Currently unavailable";
 
           return (
             <p
@@ -65,9 +73,7 @@ const BookCard = ({ book }: { book: BookCardData }) => {
               }`}
             >
               <BookOpen size={14} />
-              {copies > 0
-                ? `${copies} ${copies === 1 ? "copy" : "copies"} available`
-                : "Currently unavailable"}
+              {label}
             </p>
           );
         })()}

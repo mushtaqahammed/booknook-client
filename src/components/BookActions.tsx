@@ -4,7 +4,10 @@ import * as React from "react";
 import { Loader2, X } from "lucide-react";
 
 import { toast } from "@/components/ui/toast";
+import { getTokenFromserver } from "@/lib/getTokenFromClient";
 import type { BookCardData } from "@/types/book";
+
+const API_URL = process.env.NEXT_PUBLIC_API_URL;
 
 type ModalProps = {
   title: string;
@@ -72,9 +75,14 @@ export const EditBookModal = ({ book, onClose, onSaved }: EditBookModalProps) =>
     setSaving(true);
 
     try {
-      const res = await fetch(`http://localhost:8000/books/${book._id}`, {
+      const token = await getTokenFromserver();
+
+      const res = await fetch(`${API_URL}/books/${book._id}`, {
         method: "PUT",
-        headers: { "Content-Type": "application/json" },
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
         body: JSON.stringify(form),
       });
 
@@ -86,7 +94,8 @@ export const EditBookModal = ({ book, onClose, onSaved }: EditBookModalProps) =>
       }
 
       const updated = await res.json();
-      onSaved({ ...book, ...form, ...updated });
+      // The API returns the fully updated book inside `data`
+      onSaved({ ...book, ...form, ...(updated?.data ?? {}) });
     } catch (error) {
       toast.error(
         error instanceof Error
@@ -207,8 +216,13 @@ export const DeleteBookModal = ({ book, onClose, onDeleted }: DeleteBookModalPro
     setDeleting(true);
 
     try {
-      const res = await fetch(`http://localhost:8000/books/${book._id}`, {
+      const token = await getTokenFromserver();
+
+      const res = await fetch(`${API_URL}/books/${book._id}`, {
         method: "DELETE",
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
       });
 
       if (!res.ok) {

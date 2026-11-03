@@ -11,6 +11,7 @@ import {
 } from "lucide-react";
 
 import { authClient } from "@/lib/auth-client";
+import { getTokenFromserver } from "@/lib/getTokenFromClient";
 import Link from "next/link";
 
 export type Book = {
@@ -22,6 +23,7 @@ export type Book = {
   image: string;
   createdAt?: string;
   availableCopies?: number;
+  totalCopies?: number;
   addedBy?: {
     name: string;
     email: string;
@@ -71,6 +73,9 @@ const handleBorrow = async () => {
 
     setLoading(true);
 
+    // JWT token required by the backend for protected routes
+    const token = await getTokenFromserver();
+
     const bookData = {
       bookId: book._id,
       bookTitle: book.title,
@@ -87,6 +92,7 @@ const handleBorrow = async () => {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
       },
       body: JSON.stringify(bookData),
     });
@@ -113,7 +119,10 @@ const handleBorrow = async () => {
     toast.success("Book borrowed successfully!");
   } catch (error) {
     console.error(error);
-    toast.error("Something went wrong!");
+
+    toast.error(
+      error instanceof Error ? error.message : "Something went wrong!",
+    );
   } finally {
     setLoading(false);
   }
