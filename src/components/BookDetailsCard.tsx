@@ -21,6 +21,7 @@ export type Book = {
   description: string;
   image: string;
   createdAt?: string;
+  availableCopies?: number;
   addedBy?: {
     name: string;
     email: string;
@@ -41,6 +42,9 @@ export default function BookDetailsCard({ book }: { book: Book }) {
   const [imageFailed, setImageFailed] = useState(false);
   const [isBorrowed, setIsBorrowed] = useState(false);
   const [loading, setLoading] = useState(false);
+  const [availableCopies, setAvailableCopies] = useState(
+    book.availableCopies ?? 1,
+  );
 
   const hasValidImage = Boolean(book.image && !imageFailed);
 
@@ -57,6 +61,11 @@ const handleBorrow = async () => {
   try {
     if (!session?.user) {
       toast.error("Please login first!");
+      return;
+    }
+
+    if (availableCopies <= 0) {
+      toast.error("No copies of this book are available right now!");
       return;
     }
 
@@ -85,8 +94,11 @@ const handleBorrow = async () => {
     const data = await res.json();
 
     if (res.status === 409) {
-      setIsBorrowed(true);
-      toast.warning("You have already borrowed this book!");
+      if (data.message?.includes("already borrowed")) {
+        setIsBorrowed(true);
+      }
+
+      toast.warning(data.message || "You have already borrowed this book!");
       return;
     }
 
@@ -96,6 +108,8 @@ const handleBorrow = async () => {
     }
 
     setIsBorrowed(true);
+    // This book now has one fewer copy available (All Books page reflects it too)
+    setAvailableCopies((current) => Math.max(0, current - 1));
     toast.success("Book borrowed successfully!");
   } catch (error) {
     console.error(error);
@@ -159,6 +173,19 @@ const handleBorrow = async () => {
               By {book.author}
             </p>
 
+            <span
+              className={`mt-3 inline-flex w-fit items-center gap-1.5 rounded-full px-3 py-1.5 text-xs font-bold ${
+                availableCopies > 0
+                  ? "bg-[#F5F2EC] text-[#A67C45]"
+                  : "bg-red-50 text-red-600"
+              }`}
+            >
+              <BookOpen size={13} />
+              {availableCopies > 0
+                ? `${availableCopies} ${availableCopies === 1 ? "copy" : "copies"} available`
+                : "Out of copies"}
+            </span>
+
             <div className="my-6 h-px bg-[#D6D1C8]" />
 
             <h2 className="mb-3 text-lg font-bold text-[#191917]">
@@ -208,7 +235,7 @@ const handleBorrow = async () => {
             <button
               type="button"
               onClick={handleBorrow}
-              disabled={loading || isBorrowed}
+              disabled={loading || isBorrowed || availableCopies <= 0}
               className="mt-7 flex w-full items-center justify-center gap-2 rounded-xl bg-[#191917] px-5 py-4 text-sm font-bold text-white transition hover:bg-[#A67C45] disabled:cursor-not-allowed disabled:bg-gray-400"
             >
               <BookOpen size={19} />
@@ -217,7 +244,9 @@ const handleBorrow = async () => {
                 ? "Processing..."
                 : isBorrowed
                   ? "Already Borrowed"
-                  : "Borrow This Book"}
+                  : availableCopies <= 0
+                    ? "No Copies Available"
+                    : "Borrow This Book"}
             </button>
           </div>
         </div>

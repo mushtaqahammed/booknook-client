@@ -55,6 +55,23 @@ const BookCard = ({ book }: { book: BookCardData }) => {
           by {book.author}
         </p>
 
+        {(() => {
+          const copies = book.availableCopies ?? 1;
+
+          return (
+            <p
+              className={`mt-3 flex items-center gap-1.5 text-xs font-semibold ${
+                copies > 0 ? "text-[#A67C45]" : "text-red-600"
+              }`}
+            >
+              <BookOpen size={14} />
+              {copies > 0
+                ? `${copies} ${copies === 1 ? "copy" : "copies"} available`
+                : "Currently unavailable"}
+            </p>
+          );
+        })()}
+
         <p className="mt-3 line-clamp-3 flex-1 text-sm leading-6 text-[#555555]">
           {book.description}
         </p>

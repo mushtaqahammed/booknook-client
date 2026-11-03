@@ -6,6 +6,8 @@ export type BookCardData = {
   category: string;
   description: string;
   image?: string;
+  /** Number of copies currently available for borrowing. */
+  availableCopies?: number;
   /** Owner info attached by the add-book page. */
   userId?: string;
   addedBy?: {
