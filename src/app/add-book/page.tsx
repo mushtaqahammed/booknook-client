@@ -56,7 +56,7 @@ const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     if (!session?.user) {
       throw new Error("Please sign in first!");
     }
-   
+    const token = await getTokenFromserver();
 
     // Book information
     const bookData = {
@@ -75,7 +75,7 @@ const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
-      
+        Authorization: `Bearer ${token}`,
       },
       body: JSON.stringify(bookData),
     });
