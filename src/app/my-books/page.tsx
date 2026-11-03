@@ -34,9 +34,23 @@ const MyBooksPage = () => {
 
     let cancelled = false;
 
-    (async () => {
+    const fetchMyBooks = async () => {
       try {
-        const res = await fetch(`http://localhost:8000/my-books/${user.id}`);
+        setLoading(true);
+
+        // Get token from Better Auth session
+        const token = session?.session?.token;
+
+        if (!token) {
+          throw new Error("Authentication token not found.");
+        }
+
+        const res = await fetch(`http://localhost:8000/my-books/${user.id}`, {
+          method: "GET",
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
 
         if (!res.ok) {
           throw new Error("Failed to load your books.");
@@ -48,7 +62,7 @@ const MyBooksPage = () => {
           setBooks(data);
           setFailed(false);
         }
-      } catch {
+      } catch (error) {
         if (!cancelled) {
           setFailed(true);
           toast.error("Could not load your books. Please retry.");
@@ -58,12 +72,14 @@ const MyBooksPage = () => {
           setLoading(false);
         }
       }
-    })();
+    };
+
+    fetchMyBooks();
 
     return () => {
       cancelled = true;
     };
-  }, [isPending, user, refreshKey]);
+  }, [isPending, user?.id, session?.session?.token, refreshKey]);
 
   const handleRetry = () => {
     setFailed(false);

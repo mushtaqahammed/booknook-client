@@ -1,6 +1,7 @@
 import BookDetailsCard from "@/components/BookDetailsCard";
-import { auth } from "@/lib/auth";
-import { headers } from "next/headers";
+
+import { getTokenServer } from "@/lib/grtTokenFromServer";
+
 
 const BookDetailPage = async ({
   params,
@@ -8,17 +9,14 @@ const BookDetailPage = async ({
   params: Promise<{ id: string }>;
 }) => {
   const { id } = await params;
-  const jwtToken = await auth.api.getToken({
-    headers: await headers(),
-  });
-  console.log(jwtToken?.token)
 
-  const res = await fetch(`http://localhost:8000/books/${id}`, {
-    cache: "no-store",
-    headers: {
-      authorization: "user loged in",
-    },
-  });
+  const token = await getTokenServer();
+ const res = await fetch(`http://localhost:8000/books/${id}`, {
+   cache: "no-store",
+   headers: {
+     Authorization: `Bearer ${token}`,
+   },
+ });
 
   if (!res.ok) {
     return (

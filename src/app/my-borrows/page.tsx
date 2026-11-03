@@ -144,7 +144,7 @@ const MyBorrrowsBookPage = () => {
           </h2>
 
           <p className="mt-2 text-sm text-[#777777]">
-            You haven't borrowed any books yet.
+            You haven&apos;t borrowed any books yet.
           </p>
         </div>
       ) : (

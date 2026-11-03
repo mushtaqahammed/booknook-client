@@ -16,6 +16,7 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
+import { getTokenFromserver } from "@/lib/getTokenFromClient";
 
 
 
@@ -43,66 +44,72 @@ export default function AddBookPage() {
     }));
   };
 
-  const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
-    event.preventDefault();
+  
+const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
+  event.preventDefault();
 
-    setLoading(true);
-    setMessage("");
+  setLoading(true);
+  setMessage("");
 
-    try {
-      // Image link + form data, tagged with the signed-in user so the book
-     // shows up under My Books and in the "Added By" section.
-     const bookData = {
-       ...form,
-       image: imageName,
-       userId: session?.user?.id,
-       addedBy: {
-         id: session?.user?.id,
-         name: session?.user?.name,
-         email: session?.user?.email,
-       },
-     };
-
-      const res = await fetch("http://localhost:8000/add-book", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(bookData),
-      });
-
-      const data = await res.json();
-
-      if (!res.ok) {
-        throw new Error(data.message || "Failed to add book");
-      }
-
-     console.log("Book added:", data);
-
-     setMessage("Book added successfully!");
-     toast.success("Book added successfully!");
-
-     setForm(initialForm);
-     setImageName("");
-
-     setTimeout(() => {
-       router.push("/all-books");
-     }, 500);
-    } catch (error) {
-      console.error("Add Book Error:", error);
-
-      setMessage(
-        error instanceof Error ? error.message : "Something went wrong",
-      );
-      toast.error(
-        error instanceof Error
-          ? error.message
-          : "Something went wrong. Please try again.",
-      );
-    } finally {
-      setLoading(false);
+  try {
+    // Check logged-in user
+    if (!session?.user) {
+      throw new Error("Please sign in first!");
     }
-  };
+   
+
+    // Book information
+    const bookData = {
+      ...form,
+      image: imageName,
+      userId: session.user.id,
+      addedBy: {
+        id: session.user.id,
+        name: session.user.name,
+        email: session.user.email,
+      },
+    };
+
+    // Send request to backend
+    const res = await fetch("http://localhost:8000/add-book", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      
+      },
+      body: JSON.stringify(bookData),
+    });
+
+    const result = await res.json();
+
+    if (!res.ok) {
+      throw new Error(result.message || "Failed to add book");
+    }
+
+    console.log("Book added:", result);
+
+    setMessage("Book added successfully!");
+    toast.success("Book added successfully!");
+
+    setForm(initialForm);
+    setImageName("");
+
+    setTimeout(() => {
+      router.push("/all-books");
+    }, 500);
+  } catch (error) {
+    console.error("Add Book Error:", error);
+
+    const errorMessage =
+      error instanceof Error ? error.message : "Something went wrong";
+
+    setMessage(errorMessage);
+    toast.error(errorMessage);
+  } finally {
+    setLoading(false);
+  }
+};
+
 
   return (
     <main className="min-h-screen bg-[#F5F2EC] px-4 py-10 sm:py-14">
