@@ -1,4 +1,6 @@
 import BookDetailsCard from "@/components/BookDetailsCard";
+import { auth } from "@/lib/auth";
+import { headers } from "next/headers";
 
 const BookDetailPage = async ({
   params,
@@ -6,12 +8,16 @@ const BookDetailPage = async ({
   params: Promise<{ id: string }>;
 }) => {
   const { id } = await params;
+  const jwtToken = await auth.api.getToken({
+    headers: await headers(),
+  });
+  console.log(jwtToken?.token)
 
   const res = await fetch(`http://localhost:8000/books/${id}`, {
     cache: "no-store",
     headers: {
-      authorization:"user loged in"
-    }
+      authorization: "user loged in",
+    },
   });
 
   if (!res.ok) {
@@ -26,8 +32,6 @@ const BookDetailPage = async ({
   }
 
   const data = await res.json();
-
-   
 
   return (
     <main className="min-h-screen bg-[#F5F2EC] px-4 py-10 sm:py-14">
